@@ -1,4 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+
+import Stepper from 'bs-stepper';
+
+import { Civil3dService } from 'app/main/trans-tools/civil3d/civil3d.service';
 
 @Component({
   selector: 'app-surfaces',
@@ -6,11 +10,113 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./surfaces.component.scss']
 })
 export class SurfacesComponent implements OnInit {
+ // Public
+ public contentHeader: object;
+ public products;
+ public cartLists;
+ public wishlist;
 
-  constructor() { }
+ public address = {
+   fullNameVar: '',
+   numberVar: '',
+   flatVar: '',
+   landmarkVar: '',
+   cityVar: '',
+   pincodeVar: '',
+   stateVar: ''
+ };
 
-  ngOnInit(): void {
-    
-  }
+ // Private
+ private checkoutStepper: Stepper;
 
+ /**
+  *  Constructor
+  *
+  * @param {EcommerceService} _ecommerceService
+  */
+ constructor(private _ecommerceService: Civil3dService) {}
+
+ // Public Methods
+ // -----------------------------------------------------------------------------------------------------
+
+ /**
+  * Stepper Next
+  */
+ nextStep() {
+   this.checkoutStepper.next();
+ }
+ /**
+  * Stepper Previous
+  */
+ previousStep() {
+   this.checkoutStepper.previous();
+ }
+
+ /**
+  * Validate Next Step
+  *
+  * @param addressForm
+  */
+ validateNextStep(addressForm) {
+   if (addressForm.valid) {
+     this.nextStep();
+   }
+ }
+
+ // Lifecycle Hooks
+ // -----------------------------------------------------------------------------------------------------
+
+ /**
+  * On init
+  */
+ ngOnInit(): void {
+   // Subscribe to ProductList change
+   this._ecommerceService.onProductListChange.subscribe(res => {
+     this.products = res;
+
+     this.products.isInWishlist = false;
+   });
+
+   // Subscribe to Cartlist change
+   this._ecommerceService.onCartListChange.subscribe(res => (this.cartLists = res));
+
+   // Subscribe to Wishlist change
+   this._ecommerceService.onWishlistChange.subscribe(res => (this.wishlist = res));
+
+   // update product is in Wishlist & is in CartList : Boolean
+   this.products.forEach(product => {
+     product.isInWishlist = this.wishlist.findIndex(p => p.productId === product.id) > -1;
+     product.isInCart = this.cartLists.findIndex(p => p.productId === product.id) > -1;
+   });
+
+   this.checkoutStepper = new Stepper(document.querySelector('#checkoutStepper'), {
+     linear: false,
+     animation: true
+   });
+
+   // content header
+   this.contentHeader = {
+     headerTitle: 'Checkout',
+     actionButton: true,
+     breadcrumb: {
+       type: '',
+       links: [
+         {
+           name: 'Home',
+           isLink: true,
+           link: '/'
+         },
+         {
+           name: 'eCommerce',
+           isLink: true,
+           link: '/'
+         },
+         {
+           name: 'Checkout',
+           isLink: false
+         }
+       ]
+     }
+   };
+ }
 }

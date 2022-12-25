@@ -4,7 +4,9 @@ import { Civil3dComponent } from './civil3d/civil3d.component';
 import { AveplanComponent } from './aveplan/aveplan.component';
 import { AutocadComponent } from './autocad/autocad.component';
 import { RouterModule } from '@angular/router';
-import { SurfacesComponent } from './civil3d/surfaces/surfaces.component';
+import { SurfaceItemsComponent } from './civil3d/surfaces/surface-items/surface-items.component';
+import { SurfacesComponent } from './surfaces/surfaces.component';
+import { SurfacesItemComponent } from './surfaces/surfaces-item/surfaces-item.component';
 
 
 const routes = [
@@ -18,7 +20,7 @@ const routes = [
   },
   {
     path: 'aveplan',
-    component: AveplanComponent
+    component: SurfacesComponent
   },
   {
     path: '',
@@ -32,7 +34,9 @@ const routes = [
     Civil3dComponent,
     AveplanComponent,
     AutocadComponent,
-    SurfacesComponent
+    SurfacesComponent,
+    SurfaceItemsComponent,
+    SurfacesItemComponent
   ],
   imports: [
     RouterModule.forChild(routes),
